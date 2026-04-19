@@ -19,12 +19,15 @@ class ItemController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:100',
             'price' => 'required|numeric|min:0',
         ]);
 
         $item = Item::create([
             'name' => $request->name,
+            'category' => $request->category ?? 'General',
             'price' => $request->price,
+            'stock' => 0,   // <-- default stock for new items
         ]);
 
         return response()->json($item, 201);
@@ -102,5 +105,23 @@ class ItemController extends Controller
     {
         $sales = DailySale::with('items')->orderBy('sale_date', 'desc')->get();
         return view('sales-history', compact('sales'));
+    }
+
+
+    // Show stock management page
+    public function stocksIndex()
+    {
+        $items = Item::orderBy('name')->get();
+        return view('stocks', compact('items'));
+    }
+
+    // Update stock for an item
+    public function updateStock(Request $request, Item $item)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0',
+        ]);
+        $item->update(['stock' => $request->stock]);
+        return response()->json(['success' => true, 'stock' => $item->stock]);
     }
 }

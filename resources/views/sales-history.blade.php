@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>AJ's Store · Sales History</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .sidebar-link.active {
-            background-color: #eef2ff;
-            color: #4f46e5;
-        }
+        .sidebar-link.active { background-color: #eef2ff; color: #4f46e5; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans antialiased">
 
 <div class="flex h-screen overflow-hidden">
     
-    <!-- LEFT SIDEBAR (identical to price list) -->
+    <!-- LEFT SIDEBAR (unified) -->
     <aside class="w-72 bg-white shadow-xl border-r border-gray-200 flex flex-col">
         <div class="p-6 border-b border-gray-100">
             <h1 class="text-3xl font-extrabold text-indigo-700 flex items-center gap-2">
@@ -26,21 +25,21 @@
             <p class="text-gray-500 text-sm mt-1">Daily Liquidation</p>
         </div>
         <nav class="flex-1 p-4">
-            <a href="{{ route('items.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium text-gray-600 hover:bg-gray-50 transition">
-                <i class="fas fa-tag w-5"></i> PRICE LIST
-            </a>
-            <a href="{{ route('sales.history') }}" 
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium bg-indigo-50 text-indigo-700 transition mt-2">
-                <i class="fas fa-history w-5"></i> SALES HISTORY
-            </a>
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition text-gray-600 hover:bg-gray-50">DASHBOARD</a>
+            <a href="{{ route('items.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">PRICE LIST</a>
+            <a href="{{ route('stocks.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">STOCKS</a>
+            <a href="{{ route('debts.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">DEBTS</a>
+            <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">CUSTOMERS</a>
+            <a href="{{ route('expenses.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">EXPENSES</a>
+            <a href="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">PURCHASE ORDERS</a>
+            <a href="{{ route('sales.history') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 bg-indigo-50 text-indigo-700">SALES HISTORY</a>
             <div class="mt-8 text-xs text-gray-400 px-4 pt-8 border-t border-gray-100">
                 <i class="fas fa-tablet-alt"></i> POCO Pad M1 · Tablet mode
             </div>
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTENT (unchanged) -->
     <main class="flex-1 overflow-y-auto p-6 md:p-8">
         <div class="max-w-6xl mx-auto">
             <h1 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
@@ -96,10 +95,17 @@
 <script>
     function toggleDetails(id) {
         const el = document.getElementById(`details-${id}`);
-        if (el) {
-            el.classList.toggle('hidden');
-        }
+        if (el) el.classList.toggle('hidden');
     }
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.log('Service Worker registration failed', err));
+  });
+}
 </script>
 </body>
 </html>

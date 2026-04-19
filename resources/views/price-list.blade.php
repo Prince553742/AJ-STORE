@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>AJ's Store · Price List</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -20,7 +22,7 @@
 
 <div x-data="priceListApp()" x-init="initItems(@js($items)); loadCategories()" class="flex h-screen overflow-hidden">
     
-    <!-- LEFT SIDEBAR -->
+    <!-- LEFT SIDEBAR (unified with dashboard) -->
     <aside class="w-72 bg-white shadow-xl border-r border-gray-200 flex flex-col">
         <div class="p-6 border-b border-gray-100">
             <h1 class="text-3xl font-extrabold text-indigo-700 flex items-center gap-2">
@@ -29,14 +31,14 @@
             <p class="text-gray-500 text-sm mt-1">Daily Liquidation</p>
         </div>
         <nav class="flex-1 p-4">
-            <a href="#" @click.prevent="activeTab = 'priceList'" 
-               :class="{'bg-indigo-50 text-indigo-700': activeTab === 'priceList', 'text-gray-600 hover:bg-gray-50': activeTab !== 'priceList'}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition">
-                <i class="fas fa-tag w-5"></i> PRICE LIST
-            </a>
-            <a href="{{ route('sales.history') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium text-gray-600 hover:bg-gray-50 transition mt-2">
-                <i class="fas fa-history w-5"></i> SALES HISTORY
-            </a>
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition text-gray-600 hover:bg-gray-50">DASHBOARD</a>
+            <a href="{{ route('items.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 bg-indigo-50 text-indigo-700">PRICE LIST</a>
+            <a href="{{ route('stocks.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">STOCKS</a>
+            <a href="{{ route('debts.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">DEBTS</a>
+            <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">CUSTOMERS</a>
+            <a href="{{ route('expenses.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">EXPENSES</a>
+            <a href="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">PURCHASE ORDERS</a>
+            <a href="{{ route('sales.history') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition mt-2 text-gray-600 hover:bg-gray-50">SALES HISTORY</a>
             <div class="mt-8 text-xs text-gray-400 px-4 pt-8 border-t border-gray-100">
                 <i class="fas fa-tablet-alt"></i> POCO Pad M1 · Tablet mode
             </div>
@@ -45,8 +47,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto p-4 md:p-6">
-        
-        <!-- SEARCH + CATEGORY FILTER + ACTION BUTTONS -->
+        <!-- SEARCH + CATEGORY FILTER + ACTION BUTTONS (Clear Cart removed) -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
             <div class="relative col-span-2">
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -59,10 +60,8 @@
                     <option x-text="cat" :value="cat"></option>
                 </template>
             </select>
+            <!-- Only "Record Day" button remains -->
             <div class="flex gap-2">
-                <button @click="clearAllQuantities" class="action-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-xl flex-1 flex items-center justify-center gap-2">
-                    <i class="fas fa-eraser"></i> Clear Cart
-                </button>
                 <button @click="recordDailySale" class="action-btn bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl flex-1 flex items-center justify-center gap-2">
                     <i class="fas fa-save"></i> Record Day
                 </button>
@@ -162,7 +161,6 @@ function priceListApp() {
         filterByCategory: '',
         categories: ['General'],
 
-        // Watcher for localStorage
         init() {
             this.$watch('items', () => {
                 const qtyMap = {};
@@ -252,9 +250,8 @@ function priceListApp() {
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ name: newName })
                 });
-                if (res.ok) {
-                    item.name = newName;
-                } else alert('Failed to update name');
+                if (res.ok) item.name = newName;
+                else alert('Failed to update name');
             } catch(e) { alert('Network error'); }
         },
 
@@ -269,9 +266,8 @@ function priceListApp() {
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ price: newPrice })
                 });
-                if (res.ok) {
-                    item.price = newPrice;
-                } else alert('Failed to update price');
+                if (res.ok) item.price = newPrice;
+                else alert('Failed to update price');
             } catch(e) { alert('Network error'); }
         },
 
@@ -285,12 +281,6 @@ function priceListApp() {
                 if (!res.ok) alert('Failed to update category');
                 else await this.loadCategories();
             } catch(e) { alert('Network error'); }
-        },
-
-        clearAllQuantities() {
-            if (confirm('Clear all quantities for today? This will reset the grand total.')) {
-                this.items.forEach(item => item.quantity = 0);
-            }
         },
 
         async recordDailySale() {
@@ -311,7 +301,6 @@ function priceListApp() {
                 });
                 if (res.ok) {
                     alert('Daily sales recorded successfully!');
-                    // Reset quantities
                     this.items.forEach(item => item.quantity = 0);
                 } else {
                     const err = await res.json();
@@ -326,8 +315,15 @@ function priceListApp() {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
             }).then(res => {
-                if (res.ok) this.items = this.items.filter(i => i.id !== item.id);
-                else alert('Delete failed');
+                if (res.ok) {
+                    this.items = this.items.filter(i => i.id !== item.id);
+                    // Also remove this item's quantity from localStorage
+                    let cart = JSON.parse(localStorage.getItem('ajstore_cart') || '{}');
+                    delete cart[item.id];
+                    localStorage.setItem('ajstore_cart', JSON.stringify(cart));
+                } else {
+                    alert('Delete failed');
+                }
             }).catch(() => alert('Network error'));
         },
 
@@ -335,6 +331,15 @@ function priceListApp() {
             return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         }
     }
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.log('Service Worker registration failed', err));
+  });
 }
 </script>
 </body>
